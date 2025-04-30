@@ -102,7 +102,8 @@ public class ChestShopLogger extends JavaPlugin {
 					+ "buyprice DOUBLE,"
 					+ "sellprice DOUBLE,"
 					+ "itemname VARCHAR(50),"
-					+ "created BIGINT"
+					+ "created BIGINT,"
+					+ "remaining_stock INT DEFAULT 0"
 					+ ");"
 					);
 			st.execute();
@@ -160,6 +161,17 @@ public class ChestShopLogger extends JavaPlugin {
 				st.execute();
 				st.close();
 			
+			}
+			
+			// Ajout de la colonne remaining_stock si elle n'existe pas
+			try {
+				PreparedStatement st = con.prepareStatement(
+					"ALTER TABLE chestshop_shop ADD COLUMN IF NOT EXISTS remaining_stock INT DEFAULT 0"
+				);
+				st.execute();
+				st.close();
+			} catch (SQLException e) {
+				// La colonne existe peut-être déjà, on ignore l'erreur
 			}
 			
 		} catch (SQLException e) {

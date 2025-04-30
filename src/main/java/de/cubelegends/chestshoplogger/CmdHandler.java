@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import de.cubelegends.chestshoplogger.managers.ShopManager;
 import java.util.Arrays;
 import java.util.logging.Logger;
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.bukkit.Bukkit;
 
 public class CmdHandler implements CommandExecutor {

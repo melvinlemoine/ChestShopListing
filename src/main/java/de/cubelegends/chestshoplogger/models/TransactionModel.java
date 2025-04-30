@@ -24,18 +24,20 @@ public class TransactionModel {
 		}
 
 		String type = "unknown";
-		if(event.getTransactionType().equals(TransactionType.BUY)) {
-			type = "buy";
-		} else if(event.getTransactionType().equals(TransactionType.SELL)) {
-			type = "sell";
-		}
-		double price = event.getPrice();
-		long date = System.currentTimeMillis();
-		
 		int amount = 0;
 		for(ItemStack itemStack : event.getStock()) {
 			amount = amount + itemStack.getAmount();
 		}
+
+		if(event.getTransactionType().equals(TransactionType.BUY)) {
+			type = "buy";
+			shop.setRemainingStock(shop.getRemainingStock() - amount);
+		} else if(event.getTransactionType().equals(TransactionType.SELL)) {
+			type = "sell";
+			shop.setRemainingStock(shop.getRemainingStock() + amount);
+		}
+		double price = event.getPrice();
+		long date = System.currentTimeMillis();
 		
 		try {
 				
@@ -49,6 +51,13 @@ public class TransactionModel {
 			st.setLong(6, date);
 			st.execute();
 			st.close();
+
+			st = con.prepareStatement("UPDATE chestshop_shop SET remaining_stock = ? WHERE id = ?");
+			st.setInt(1, shop.getRemainingStock());
+			st.setInt(2, shop.getID());
+			st.execute();
+			st.close();
+
 			con.close();
 				
 		} catch (SQLException ex) {

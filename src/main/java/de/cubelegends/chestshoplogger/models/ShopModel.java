@@ -35,6 +35,7 @@ public class ShopModel {
 	private double sellPrice;
 	private String itemName;
 	private long created;
+	private int remainingStock;
 
 	public ShopModel(ChestShopLogger plugin, int id) {
 		this.plugin = plugin;
@@ -76,11 +77,12 @@ public class ShopModel {
 		double sellPrice = PriceUtil.getSellPrice(signLines[2]);
 		String itemName = ShopManager.getItemName(signLines[3]);
 		long created = System.currentTimeMillis();
+		int remainingStock = 0;
 		
 		try {
 			
 			Connection con = plugin.getDBHandler().open();
-			PreparedStatement st = con.prepareStatement("INSERT INTO chestshop_shop (world, x, y, z, tpx, tpy, tpz, tpyaw, tppitch, owneruuid, maxamount, buyprice, sellprice, itemname, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+			PreparedStatement st = con.prepareStatement("INSERT INTO chestshop_shop (world, x, y, z, tpx, tpy, tpz, tpyaw, tppitch, owneruuid, maxamount, buyprice, sellprice, itemname, created, remaining_stock) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 			st.setString(1, world);
 			st.setInt(2, x);
 			st.setInt(3, y);
@@ -97,6 +99,7 @@ public class ShopModel {
 			st.setDouble(13, sellPrice);
 			st.setString(14, itemName);
 			st.setLong(15, created);
+			st.setInt(16, remainingStock);
 			st.execute();
 			st.close();
 			con.close();
@@ -242,6 +245,7 @@ public class ShopModel {
 			sellPrice = rs.getDouble("sellprice");
 			itemName = rs.getString("itemname");
 			created = rs.getLong("created");
+			remainingStock = rs.getInt("remaining_stock");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -266,7 +270,8 @@ public class ShopModel {
 					+ "buyprice = ?,"
 					+ "sellprice = ?,"
 					+ "itemname = ?,"
-					+ "created = ? WHERE id = ?");
+					+ "created = ?,"
+					+ "remaining_stock = ? WHERE id = ?");
 			st.setString(1, loc.getWorld().getName());
 			st.setInt(2, loc.getBlockX());
 			st.setInt(3, loc.getBlockY());
@@ -286,7 +291,8 @@ public class ShopModel {
 			st.setDouble(13, sellPrice);
 			st.setString(14, itemName);
 			st.setLong(15, created);
-			st.setInt(16, id);
+			st.setInt(16, remainingStock);
+			st.setInt(17, id);
 			st.execute();
 			st.close();
 			con.close();
@@ -336,6 +342,10 @@ public class ShopModel {
 		return created;
 	}
 	
+	public int getRemainingStock() {
+		return remainingStock;
+	}
+	
 	public void setLoc(Location loc) {
 		this.loc = loc;
 	}
@@ -362,6 +372,10 @@ public class ShopModel {
 	
 	public void setItemName(String itemName) {
 		this.itemName = itemName;
+	}
+	
+	public void setRemainingStock(int remainingStock) {
+		this.remainingStock = remainingStock;
 	}
 	
 }
